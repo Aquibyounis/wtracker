@@ -71,9 +71,12 @@ export function Sidebar() {
         {/* Logo */}
         <div className="px-5 pt-6 pb-2">
           <div className="flex items-center justify-between">
-            <h1 className="text-[13px] font-bold tracking-[0.15em] text-black">
-              ANTIGRAVITY
-            </h1>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Wtracker Logo" className="w-5 h-5 object-contain" />
+              <h1 className="text-[13px] font-bold tracking-[0.15em] text-black">
+                WTRACKER
+              </h1>
+            </div>
             <button
               onClick={toggleSidebar}
               className="lg:hidden p-1 rounded-md text-muted hover:text-black hover:bg-surface transition-colors"
