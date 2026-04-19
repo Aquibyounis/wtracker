@@ -22,7 +22,7 @@ export async function GET(req: Request) {
       include: {
         workBlocks: { include: { workBlockTags: { include: { tag: true } } } },
         points: true,
-        room: { select: { name: true } },
+        project: { select: { name: true } },
       },
     })
 
@@ -76,10 +76,10 @@ export async function GET(req: Request) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
 
-    // Room breakdown
+    // Project breakdown
     const roomMap = new Map<string, { days: number; points: number; totalTime: number }>()
     days.forEach((d) => {
-      const roomName = d.room?.name || 'No Room'
+      const roomName = (d as any).project?.name || 'No Project'
       const existing = roomMap.get(roomName) || { days: 0, points: 0, totalTime: 0 }
       existing.days++
       existing.points += d.points.length

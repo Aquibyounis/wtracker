@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         date: body.date ? new Date(body.date) : new Date(),
         status: 'draft',
         userId: session!.user.id,
-        roomId: originalDay.roomId,
+        projectId: originalDay.projectId,
         workBlocks: {
           create: originalDay.workBlocks.map((wb, i) => ({
             title: wb.title,

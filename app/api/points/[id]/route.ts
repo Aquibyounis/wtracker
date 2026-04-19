@@ -12,7 +12,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       include: {
         pointTags: { include: { tag: true } },
         day: { select: { id: true, title: true, date: true } },
-        room: { select: { id: true, name: true } },
       },
     })
 
@@ -73,7 +72,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       include: {
         pointTags: { include: { tag: true } },
         day: { select: { id: true, title: true, date: true } },
-        room: { select: { id: true, name: true } },
       },
     })
 

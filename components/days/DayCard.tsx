@@ -32,9 +32,9 @@ export function DayCard({ day, onDelete, onCopy }: DayCardProps) {
 
         <h4 className="text-base font-medium mt-4 line-clamp-1">{day.title}</h4>
 
-        {(day.room as any)?.name && (
+        {day.project?.name && (
           <span className="inline-block text-xs bg-surface text-muted px-2 py-0.5 rounded-full mt-2">
-            {(day.room as any).name}
+            {day.project.name}
           </span>
         )}
 

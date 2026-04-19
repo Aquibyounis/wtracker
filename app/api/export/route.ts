@@ -9,12 +9,12 @@ export async function GET() {
 
     const userId = session!.user.id
 
-    const [user, rooms, days, points, tags] = await Promise.all([
+    const [user, companies, days, points, tags] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
         select: { id: true, name: true, email: true, createdAt: true },
       }),
-      prisma.room.findMany({ where: { userId } }),
+      prisma.company.findMany({ where: { userId } }),
       prisma.day.findMany({
         where: { userId },
         include: {
@@ -31,7 +31,7 @@ export async function GET() {
     const exportData = {
       exportDate: new Date().toISOString(),
       user,
-      rooms,
+      companies,
       days: days.map((d) => ({
         ...d,
         workBlocks: d.workBlocks.map((wb) => ({
