@@ -11,11 +11,25 @@ module.exports = {
         sans: ['Inter', 'sans-serif'],
       },
       colors: {
-        background: '#FFFFFF',
-        foreground: '#000000',
-        muted: '#888888',
-        surface: '#F4F4F4',
-        border: '#E0E0E0',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        surface: {
+          DEFAULT: 'var(--surface)',
+          hover: 'var(--surface-hover)',
+          active: 'var(--surface-active)',
+        },
+        border: {
+          DEFAULT: 'var(--border)',
+          strong: 'var(--border-strong)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
       },
       fontSize: {
         label: ['11px', '16px'],

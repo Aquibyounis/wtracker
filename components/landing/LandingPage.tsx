@@ -89,12 +89,12 @@ export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#f4f5f6] text-[#0a0a0a] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
 
       {/* ── NAV ─────────────────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 h-16 bg-[#f4f5f6]/90 backdrop-blur-md border-b border-black/[0.06]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 h-16 bg-background/90 backdrop-blur-md border-b border-foreground/[0.06]">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#0a0a0a] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center">
             <img src="/logo.png" alt="DockitUp" className="w-4 h-4 object-contain invert" />
           </div>
           <span className="text-[13px] font-black tracking-[0.25em] uppercase">DOCKITUP</span>
@@ -102,11 +102,11 @@ export default function LandingPage() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-xs font-black uppercase tracking-widest text-[#0a0a0a]/50 hover:text-[#0a0a0a] transition-colors">Features</a>
-          <a href="#how" className="text-xs font-black uppercase tracking-widest text-[#0a0a0a]/50 hover:text-[#0a0a0a] transition-colors">How it works</a>
-          <a href="#testimonials" className="text-xs font-black uppercase tracking-widest text-[#0a0a0a]/50 hover:text-[#0a0a0a] transition-colors">Reviews</a>
-          <Link href="/auth/login" className="text-xs font-black uppercase tracking-widest text-[#0a0a0a]/50 hover:text-[#0a0a0a] transition-colors">Sign In</Link>
-          <Link href="/auth/register" className="bg-[#0a0a0a] text-white text-xs font-black uppercase tracking-widest px-5 py-2.5 rounded-xl hover:bg-black/80 transition-all active:scale-95">
+          <a href="#features" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">Features</a>
+          <a href="#how" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">How it works</a>
+          <a href="#testimonials" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">Reviews</a>
+          <Link href="/auth/login" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">Sign In</Link>
+          <Link href="/auth/register" className="bg-foreground text-background text-xs font-black uppercase tracking-widest px-5 py-2.5 rounded-xl hover:bg-foreground/80 transition-all active:scale-95">
             Get Started
           </Link>
         </div>
@@ -119,12 +119,12 @@ export default function LandingPage() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-[#f4f5f6] pt-16 flex flex-col items-center justify-center gap-8">
+        <div className="fixed inset-0 z-40 bg-background pt-16 flex flex-col items-center justify-center gap-8">
           {[['#features','Features'],['#how','How it works'],['#testimonials','Reviews']].map(([h,l]) => (
             <a key={h} href={h} onClick={() => setMobileOpen(false)} className="text-2xl font-black uppercase tracking-widest">{l}</a>
           ))}
           <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="text-2xl font-black uppercase tracking-widest opacity-50">Sign In</Link>
-          <Link href="/auth/register" onClick={() => setMobileOpen(false)} className="mt-4 bg-[#0a0a0a] text-white text-sm font-black uppercase tracking-widest px-8 py-4 rounded-2xl">
+          <Link href="/auth/register" onClick={() => setMobileOpen(false)} className="mt-4 bg-foreground text-background text-sm font-black uppercase tracking-widest px-8 py-4 rounded-2xl">
             Get Started →
           </Link>
         </div>
@@ -134,7 +134,7 @@ export default function LandingPage() {
       <section className="pt-32 pb-20 px-6 lg:px-12 max-w-7xl mx-auto">
         {/* Badge */}
         <div className="flex justify-center mb-8">
-          <span className="inline-flex items-center gap-2 bg-[#0a0a0a] text-white text-[10px] font-black uppercase tracking-[0.25em] px-4 py-2 rounded-full">
+          <span className="inline-flex items-center gap-2 bg-foreground text-background text-[10px] font-black uppercase tracking-[0.25em] px-4 py-2 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Free to use · No credit card required
           </span>
@@ -150,7 +150,7 @@ export default function LandingPage() {
           <span className="text-[#0a0a0a]/20">Every Day.</span>
         </h1>
 
-        <p className="mt-8 text-lg md:text-xl text-[#0a0a0a]/50 font-medium text-center max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-8 text-lg md:text-xl text-muted font-medium text-center max-w-2xl mx-auto leading-relaxed">
           DockitUp is the daily work tracker built for professionals who care about shipping. Log days, pin wins, track streaks — all in one ruthlessly minimal workspace.
         </p>
 
@@ -158,24 +158,24 @@ export default function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
           <Link
             href="/auth/register"
-            className="flex items-center gap-2 bg-[#0a0a0a] text-white font-black text-sm uppercase tracking-widest px-8 py-4 rounded-2xl hover:bg-black/80 transition-all active:scale-[0.97] shadow-xl shadow-black/10"
+            className="flex items-center gap-2 bg-foreground text-background font-black text-sm uppercase tracking-widest px-8 py-4 rounded-2xl hover:bg-foreground/80 transition-all active:scale-[0.97] shadow-xl shadow-foreground/10"
           >
             Start For Free <ArrowRight size={16} />
           </Link>
           <Link
             href="/auth/login"
-            className="flex items-center gap-2 bg-white text-[#0a0a0a] font-black text-sm uppercase tracking-widest px-8 py-4 rounded-2xl border border-black/10 hover:border-black/30 transition-all active:scale-[0.97]"
+            className="flex items-center gap-2 bg-surface text-foreground font-black text-sm uppercase tracking-widest px-8 py-4 rounded-2xl border border-foreground/10 hover:border-foreground/30 transition-all active:scale-[0.97]"
           >
             Sign In <ChevronRight size={16} />
           </Link>
         </div>
 
         {/* Social proof strip */}
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-[#0a0a0a]/30">
+        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-muted">
           {['No Spreadsheets', 'No Google Docs', 'No Context Loss'].map((t, i) => (
             <React.Fragment key={t}>
               <span>{t}</span>
-              {i < 2 && <span className="w-1 h-1 rounded-full bg-[#0a0a0a]/20" />}
+              {i < 2 && <span className="w-1 h-1 rounded-full bg-foreground/20" />}
             </React.Fragment>
           ))}
         </div>
