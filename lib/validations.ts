@@ -97,3 +97,11 @@ export const pointUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
 })
 
+export const roomSchema = z.object({
+  name: z.string().min(1, 'Room name is required').max(100),
+  description: z.string().max(500).optional(),
+  color: z.string().max(20).optional(),
+  icon: z.string().max(50).optional(),
+})
+
+export const roomUpdateSchema = roomSchema.partial()
