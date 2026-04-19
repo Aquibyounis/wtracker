@@ -13,7 +13,16 @@ interface PinGateProps {
 
 export function PinGate({ children }: PinGateProps) {
   const { data: session, status } = useSession()
-  const { pinVerified, setPinVerified, pinLockUntil, setPinLockUntil, pinAttempts, incrementAttempts, resetAttempts } = useAuthStore()
+  const { 
+    pinVerified, 
+    setPinVerified, 
+    pinVerifiedAt,
+    pinLockUntil, 
+    setPinLockUntil, 
+    pinAttempts, 
+    incrementAttempts, 
+    resetAttempts 
+  } = useAuthStore()
 
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
@@ -66,6 +75,21 @@ export function PinGate({ children }: PinGateProps) {
     }, 1000)
     return () => clearInterval(interval)
   }, [pinLockUntil, setPinLockUntil, resetAttempts])
+
+  // Session auto-lock check (5 mins)
+  useEffect(() => {
+    if (!pinVerified || !pinVerifiedAt) return
+    
+    const checkSession = () => {
+      const PIN_SESSION_DURATION = 5 * 60 * 1000
+      if (Date.now() - pinVerifiedAt >= PIN_SESSION_DURATION) {
+        setPinVerified(false)
+      }
+    }
+
+    const interval = setInterval(checkSession, 10000) // Check every 10s
+    return () => clearInterval(interval)
+  }, [pinVerified, pinVerifiedAt, setPinVerified])
 
   const triggerShake = useCallback(() => {
     setShaking(true)

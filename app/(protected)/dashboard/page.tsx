@@ -45,16 +45,21 @@ export default async function DashboardPage() {
         orderBy: { createdAt: 'desc' },
         take: 5,
         include: {
-          room: { select: { name: true } },
+          day: { select: { room: { select: { name: true } } } },
         },
       }),
       prisma.room.findMany({
         where: { userId },
         orderBy: { updatedAt: 'desc' },
         take: 4,
-        include: { _count: { select: { days: true, points: true } } },
+        include: { _count: { select: { days: true } } },
       }),
     ])
+
+  const flattenedRecentPoints = recentPoints.map((p: any) => ({
+    ...p,
+    room: p.day?.room || null,
+  }))
 
   // Calculate streak
   let currentStreak = 0
@@ -89,7 +94,7 @@ export default async function DashboardPage() {
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <RecentPoints points={JSON.parse(JSON.stringify(recentPoints))} />
+        <RecentPoints points={JSON.parse(JSON.stringify(flattenedRecentPoints))} />
         <PinnedRooms rooms={JSON.parse(JSON.stringify(pinnedRooms))} />
       </div>
     </PageWrapper>
