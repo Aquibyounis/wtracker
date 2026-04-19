@@ -1,0 +1,180 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  pinHash      String?
+  pinEnabled   Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  settings     UserSettings?
+  rooms        Room[]
+  days         Day[]
+  points       Point[]
+  tags         Tag[]
+
+  @@map("users")
+}
+
+model UserSettings {
+  id               String  @id @default(cuid())
+  userId           String  @unique
+  timezone         String  @default("Asia/Kolkata")
+  dateFormat       String  @default("DD/MM/YYYY")
+  weekStart        String  @default("monday")
+  fontSize         String  @default("medium")
+  sidebarCollapsed Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String   @default("briefcase")
+  colorLabel  String   @default("light")
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days   Day[]
+  points Point[]
+
+  @@map("rooms")
+}
+
+model Day {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime
+  status    String   @default("draft")
+  summary   String?
+  mood      Int?
+  notes     String?
+  userId    String
+  roomId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room       Room?       @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  workBlocks WorkBlock[]
+  points     Point[]
+  dayTags    DayTag[]
+
+  @@map("days")
+}
+
+model WorkBlock {
+  id        String   @id @default(cuid())
+  title     String
+  body      String?
+  duration  Int?
+  timestamp String?
+  priority  String   @default("normal")
+  order     Int      @default(0)
+  dayId     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  day            Day              @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  workBlockTags  WorkBlockTag[]
+  linkedPoints   WorkBlockPoint[]
+
+  @@map("work_blocks")
+}
+
+model Point {
+  id         String   @id @default(cuid())
+  title      String
+  body       String?
+  priority   String   @default("normal")
+  colorLabel String   @default("light")
+  userId     String
+  dayId      String?
+  roomId     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day            Day?             @relation(fields: [dayId], references: [id], onDelete: SetNull)
+  room           Room?            @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  pointTags      PointTag[]
+  workBlockLinks WorkBlockPoint[]
+
+  @@map("points")
+}
+
+model Tag {
+  id     String @id @default(cuid())
+  name   String
+  userId String
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pointTags     PointTag[]
+  workBlockTags WorkBlockTag[]
+  dayTags       DayTag[]
+
+  @@unique([name, userId])
+  @@map("tags")
+}
+
+model PointTag {
+  pointId String
+  tagId   String
+
+  point Point @relation(fields: [pointId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([pointId, tagId])
+  @@map("point_tags")
+}
+
+model WorkBlockTag {
+  workBlockId String
+  tagId       String
+
+  workBlock WorkBlock @relation(fields: [workBlockId], references: [id], onDelete: Cascade)
+  tag       Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([workBlockId, tagId])
+  @@map("work_block_tags")
+}
+
+model DayTag {
+  dayId String
+  tagId String
+
+  day Day @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([dayId, tagId])
+  @@map("day_tags")
+}
+
+model WorkBlockPoint {
+  workBlockId String
+  pointId     String
+
+  workBlock WorkBlock @relation(fields: [workBlockId], references: [id], onDelete: Cascade)
+  point     Point     @relation(fields: [pointId], references: [id], onDelete: Cascade)
+
+  @@id([workBlockId, pointId])
+  @@map("work_block_points")
+}
