@@ -30,7 +30,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
         <Sidebar />
         <main className="flex-1 lg:ml-[264px] min-h-screen transition-all duration-300">
           <TopBar />
-          <div className="fade-in px-4 lg:px-8 py-6 max-w-[1600px] mx-auto w-full">
+          <div className="px-4 lg:px-8 py-6 max-w-[1600px] mx-auto w-full">
             {children}
           </div>
         </main>

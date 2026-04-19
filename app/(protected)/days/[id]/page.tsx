@@ -21,6 +21,8 @@ export default function DayEditorPage() {
   const { currentDay, setCurrentDay, blocks, setBlocks, addBlock, removeBlock, reorderBlocks, updateBlock } = useDayStore()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [quickTask, setQuickTask] = useState('')
+  const [isAdding, setIsAdding] = useState(false)
 
   const dayId = params?.id as string
 
@@ -67,24 +69,37 @@ export default function DayEditorPage() {
     await saveField('status', nextStatus)
   }
 
-  const handleAddBlock = async () => {
+  const handleAddBlock = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (!quickTask.trim() && !isAdding) {
+      setIsAdding(true)
+      return
+    }
+    if (!quickTask.trim()) return
+
+    const title = quickTask.trim()
+    setQuickTask('')
+    setIsAdding(false)
+
     try {
       const res = await fetch('/api/blocks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dayId, title: 'New Block' }),
+        body: JSON.stringify({ dayId, title }),
       })
       if (!res.ok) throw new Error()
       const block = await res.json()
       addBlock(block)
+      toast.success('Task recorded', { icon: '⚡' })
     } catch {
-      toast.error('Failed to add block')
+      toast.error('Failed to add task')
     }
   }
 
   const handleDeleteBlock = async (blockId: string) => {
     try {
-      await fetch(`/api/blocks/${blockId}`, { method: 'DELETE' })
+      const res = await fetch(`/api/blocks/${blockId}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
       removeBlock(blockId)
       toast.success('Block removed')
     } catch {
@@ -196,15 +211,14 @@ export default function DayEditorPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
         {/* Left — Work Log */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <p className="text-xs text-muted uppercase tracking-wider font-bold">Tasks Executed</p>
-              <div className="flex items-center gap-2 bg-surface px-3 py-1 rounded-full border border-black/[0.03]">
-                <label className="text-[10px] font-bold text-muted uppercase cursor-pointer select-none" htmlFor="meeting-toggle">Meeting Held?</label>
+              <p className="text-xs text-muted uppercase tracking-[0.2em] font-black">Timeline</p>
+              <div className="flex items-center gap-2 bg-surface px-3 py-1 rounded-full border border-black/5">
+                <label className="text-[9px] font-black text-muted uppercase cursor-pointer" htmlFor="meeting-toggle">Meeting Held?</label>
                 <input 
                   id="meeting-toggle"
                   type="checkbox" 
-                  className="w-3 h-3 rounded border-border focus:ring-black accent-black shadow-sm"
+                  className="w-3 h-3 rounded border-border focus:ring-black accent-black"
                   checked={currentDay.hasMeeting}
                   onChange={(e) => {
                     setCurrentDay({ ...currentDay, hasMeeting: e.target.checked })
@@ -213,9 +227,29 @@ export default function DayEditorPage() {
                 />
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={handleAddBlock} className="h-8 text-[11px] font-bold uppercase tracking-tight">
-              <Plus size={14} className="mr-1" /> Add Task
-            </Button>
+
+          {/* Quick Task Input */}
+          <div className="relative group">
+            <form onSubmit={handleAddBlock}>
+              <input
+                type="text"
+                placeholder="CAPTURE NEW TASK..."
+                className="w-full bg-black text-white placeholder:text-white/20 text-xs font-black tracking-[0.2em] px-6 py-5 rounded-2xl outline-none border border-white/5 focus:border-white/20 transition-all shadow-2xl"
+                value={quickTask}
+                onChange={(e) => setQuickTask(e.target.value)}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                <span className="text-[9px] font-black text-white/20 uppercase tracking-widest hidden group-focus-within:block py-1 px-2 border border-white/10 rounded">Enter to save</span>
+                <Button 
+                  type="submit" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                >
+                  <Plus size={18} />
+                </Button>
+              </div>
+            </form>
           </div>
 
           {currentDay.hasMeeting && (
@@ -245,8 +279,8 @@ export default function DayEditorPage() {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           className={cn(
-                            'border border-border rounded-xl p-5 bg-white transition-all duration-200 group relative',
-                            snapshot.isDragging ? 'shadow-2xl border-black ring-4 ring-black/5' : 'hover:border-black/20 hover:shadow-md'
+                            'border border-black/5 rounded-2xl p-6 bg-white transition-all duration-300 group relative',
+                            snapshot.isDragging ? 'shadow-2xl scale-[1.02] z-50 border-black ring-8 ring-black/5' : 'hover:border-black/20 hover:shadow-xl'
                           )}
                         >
                           <div className="flex items-start gap-4">
@@ -258,7 +292,7 @@ export default function DayEditorPage() {
                                 <div className="flex items-center gap-2">
                                   <input
                                     placeholder="09:00"
-                                    className="w-20 text-[11px] font-bold tracking-widest text-black bg-surface rounded-md px-2 py-1.5 border-none outline-none text-center shadow-inner"
+                                    className="w-20 text-[11px] font-black tracking-widest text-black bg-surface rounded-md px-2 py-1.5 border-none outline-none text-center shadow-inner"
                                     value={block.timestamp || ''}
                                     onChange={(e) => handleBlockChange(block.id, 'timestamp', e.target.value)}
                                   />
@@ -272,7 +306,7 @@ export default function DayEditorPage() {
                                   />
                                 </div>
                                 <input
-                                  className="flex-1 text-[16px] font-semibold bg-transparent border-none outline-none placeholder:text-muted/40"
+                                  className="flex-1 text-[16px] font-black text-black bg-transparent border-none outline-none placeholder:text-muted/40"
                                   placeholder="What did you achieve?"
                                   value={block.title}
                                   onChange={(e) => updateBlock(block.id, { title: e.target.value })}
@@ -281,7 +315,7 @@ export default function DayEditorPage() {
                               </div>
                               <textarea
                                 placeholder="Context, outcomes, or notes..."
-                                className="w-full text-[13px] leading-relaxed text-muted bg-transparent border-none outline-none resize-none focus:placeholder:opacity-0 transition-all"
+                                className="w-full text-[13px] font-medium leading-relaxed text-muted bg-transparent border-none outline-none resize-none focus:placeholder:opacity-0 transition-all uppercase tracking-tight"
                                 rows={2}
                                 value={block.body || ''}
                                 onChange={(e) => updateBlock(block.id, { body: e.target.value })}
@@ -318,14 +352,6 @@ export default function DayEditorPage() {
               )}
             </Droppable>
           </DragDropContext>
-
-          <button
-            onClick={handleAddBlock}
-            className="w-full py-5 border-2 border-dashed border-border rounded-xl text-sm font-bold text-muted hover:text-black hover:border-black/40 hover:bg-surface/30 transition-all flex items-center justify-center gap-2 group"
-          >
-            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> 
-            RECORD NEW TASK
-          </button>
         </div>
 
         {/* Right — Sidebar */}

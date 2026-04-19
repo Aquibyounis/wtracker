@@ -9,9 +9,9 @@ export async function getSession() {
 export async function requireAuth() {
   const session = await getSession()
   if (!session?.user?.id) {
-    return { session: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+    return { session: null, userId: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
   }
-  return { session, error: null }
+  return { session, userId: session.user.id, error: null }
 }
 
 export function successResponse(data: unknown, status = 200) {

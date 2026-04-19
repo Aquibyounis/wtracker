@@ -11,7 +11,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { cn } from '@/lib/utils'
-import { Download, Trash2, Plus } from 'lucide-react'
+import { Download, Trash2, Plus, ExternalLink, Settings2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function SettingsPage() {
@@ -29,6 +29,11 @@ export default function SettingsPage() {
 
   const [companies, setCompanies] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [editCompanyOpen, setEditCompanyOpen] = useState(false)
+  const [editingCompany, setEditingCompany] = useState<any>(null)
+  const [editName, setEditName] = useState('')
+  const [editDrive, setEditDrive] = useState('')
+  const [editLoading, setEditLoading] = useState(false)
 
   useEffect(() => {
     fetchCompanies()
@@ -64,37 +69,32 @@ export default function SettingsPage() {
     }
   }
 
-  const handleChangePin = async () => {
-    if (newPin !== confirmNewPin) {
-      toast.error("New PINs don't match")
-      return
-    }
-    if (newPin.length !== 4 || currentPin.length !== 4) {
-      toast.error('PIN must be 4 digits')
-      return
-    }
-    setChangePinLoading(true)
+  const handleEditCompany = async () => {
+    if (!editingCompany) return
+    setEditLoading(true)
     try {
-      const res = await fetch('/api/auth/change-pin', {
+      const res = await fetch(`/api/companies/${editingCompany.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPin, newPin }),
+        body: JSON.stringify({ name: editName, driveLink: editDrive }),
       })
-      if (!res.ok) {
-        const data = await res.json()
-        toast.error(data.error || 'Failed to change PIN')
-        return
+      if (res.ok) {
+        toast.success('Company updated')
+        setEditCompanyOpen(false)
+        fetchCompanies()
       }
-      toast.success('PIN changed successfully')
-      setChangePinOpen(false)
-      setCurrentPin('')
-      setNewPin('')
-      setConfirmNewPin('')
     } catch {
-      toast.error('Failed to change PIN')
+      toast.error('Failed to update company')
     } finally {
-      setChangePinLoading(false)
+      setEditLoading(false)
     }
+  }
+
+  const openEditModal = (company: any) => {
+    setEditingCompany(company)
+    setEditName(company.name)
+    setEditDrive(company.driveLink || '')
+    setEditCompanyOpen(true)
   }
 
   return (
@@ -137,24 +137,48 @@ export default function SettingsPage() {
                   )}
                 >
                   <div>
-                    <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center gap-3 mb-1">
                       <p className={cn(
                         'text-sm font-black uppercase tracking-tight truncate flex-1',
                         company.isDefault ? 'text-[var(--accent-foreground)]' : 'text-[var(--foreground)]'
                       )}>
                         {company.name}
                       </p>
+                      <button 
+                        onClick={() => openEditModal(company)}
+                        className={cn(
+                          "p-1.5 rounded-lg transition-colors",
+                          company.isDefault ? "hover:bg-white/20 text-white/60" : "hover:bg-black/5 text-muted"
+                        )}
+                      >
+                        <Settings2 size={12} />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 mb-4">
                       {company.isDefault && (
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-60">
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 bg-white/20 rounded">
                           PRIMARY
                         </span>
                       )}
+                      {company.driveLink && (
+                        <a 
+                          href={company.driveLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className={cn(
+                            "flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.2em] transition-all",
+                            company.isDefault ? "text-white/80 hover:text-white" : "text-black/40 hover:text-black"
+                          )}
+                        >
+                          <ExternalLink size={10} /> DRIVE ASSET
+                        </a>
+                      )}
                     </div>
                     <p className={cn(
-                      'text-[10px] font-black uppercase tracking-widest',
-                      company.isDefault ? 'opacity-50' : 'text-[var(--muted)]'
+                      'text-[9px] font-black uppercase tracking-[0.3em]',
+                      company.isDefault ? 'opacity-40' : 'text-[var(--muted)]'
                     )}>
-                      Operational Capacity: {company._count?.projects || 0} Units
+                      NODE CAPACITY: {company._count?.projects || 0} UNITS
                     </p>
                   </div>
                   {!company.isDefault && (
@@ -308,15 +332,58 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Edit Company Modal */}
+      <Modal open={editCompanyOpen} onClose={() => setEditCompanyOpen(false)} title="Intelligence Node Config" size="sm">
+        <div className="space-y-6">
+          <Input label="Workspace Name" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="ENTER COMPANY NAME..." />
+          <Input label="Google Drive Asset Link" value={editDrive} onChange={(e) => setEditDrive(e.target.value)} placeholder="https://drive.google.com/..." />
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="secondary" onClick={() => setEditCompanyOpen(false)}>Cancel</Button>
+            <Button loading={editLoading} onClick={handleEditCompany}>Synchronize</Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Change PIN Modal */}
-      <Modal open={changePinOpen} onClose={() => setChangePinOpen(false)} title="Change PIN" size="sm">
-        <div className="space-y-4">
-          <Input label="Current PIN" type="password" maxLength={4} value={currentPin} onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
-          <Input label="New PIN" type="password" maxLength={4} value={newPin} onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
-          <Input label="Confirm New PIN" type="password" maxLength={4} value={confirmNewPin} onChange={(e) => setConfirmNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setChangePinOpen(false)}>Cancel</Button>
-            <Button loading={changePinLoading} onClick={handleChangePin}>Save</Button>
+      <Modal open={changePinOpen} onClose={() => setChangePinOpen(false)} title="Security Protocol Update" size="sm">
+        <div className="space-y-6">
+          <Input label="Current Access PIN" type="password" maxLength={4} value={currentPin} onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
+          <Input label="New Sequence" type="password" maxLength={4} value={newPin} onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
+          <Input label="Verify Sequence" type="password" maxLength={4} value={confirmNewPin} onChange={(e) => setConfirmNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="••••" />
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="secondary" onClick={() => setChangePinOpen(false)}>Abort</Button>
+            <Button loading={changePinLoading} onClick={async () => {
+                if (newPin !== confirmNewPin) {
+                  toast.error("New PINs don't match")
+                  return
+                }
+                if (newPin.length !== 4 || currentPin.length !== 4) {
+                  toast.error('PIN must be 4 digits')
+                  return
+                }
+                setChangePinLoading(true)
+                try {
+                  const res = await fetch('/api/auth/change-pin', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPin, newPin }),
+                  })
+                  if (!res.ok) {
+                    const data = await res.json()
+                    toast.error(data.error || 'Failed to change PIN')
+                    return
+                  }
+                  toast.success('PIN changed successfully')
+                  setChangePinOpen(false)
+                  setCurrentPin('')
+                  setNewPin('')
+                  setConfirmNewPin('')
+                } catch {
+                  toast.error('Failed to change PIN')
+                } finally {
+                  setChangePinLoading(false)
+                }
+            }}>Update Protocol</Button>
           </div>
         </div>
       </Modal>

@@ -47,6 +47,7 @@ model Company {
   id          String   @id @default(cuid())
   name        String
   description String?
+  driveLink   String?
   isDefault   Boolean  @default(false)
   userId      String
   createdAt   DateTime @default(now())

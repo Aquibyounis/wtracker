@@ -8,7 +8,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { isDefault, name, description } = await req.json()
+    const { isDefault, name, description, driveLink } = await req.json()
 
     // If setting as default, unset all others for this user
     if (isDefault) {
@@ -24,6 +24,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         isDefault: isDefault !== undefined ? !!isDefault : undefined,
         name: name || undefined,
         description: description || undefined,
+        driveLink: driveLink !== undefined ? driveLink : undefined,
       },
     })
 
