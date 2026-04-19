@@ -72,9 +72,9 @@ export function RegisterForm() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-10">
-          <img src="/logo.png" alt="Wtracker Logo" className="w-10 h-10 object-contain mx-auto mb-4" />
+          <img src="/logo.png" alt="DockitUp Logo" className="w-10 h-10 object-contain mx-auto mb-4" />
           <h1 className="text-[13px] font-bold tracking-[0.15em] text-black mb-2">
-            WTRACKER
+            DOCKITUP
           </h1>
           <p className="text-sm text-muted">Create your account</p>
         </div>

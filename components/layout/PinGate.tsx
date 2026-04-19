@@ -192,9 +192,9 @@ export function PinGate({ children }: PinGateProps) {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
       {/* Logo */}
-      <img src="/logo.png" alt="Wtracker Logo" className="w-10 h-10 object-contain mb-4" />
+      <img src="/logo.png" alt="DockitUp Logo" className="w-10 h-10 object-contain mb-4" />
       <h1 className="text-[13px] font-bold tracking-[0.15em] text-black mb-8">
-        WTRACKER
+        DOCKITUP
       </h1>
 
       {/* Subtitle */}

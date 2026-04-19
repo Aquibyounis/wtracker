@@ -25,7 +25,7 @@ export function TopBar() {
     pageTitles[pathname || ''] ||
     (pathname?.startsWith('/days/') ? 'Day Editor' : '') ||
     (pathname?.startsWith('/rooms/') ? 'Room' : '') ||
-    'Wtracker'
+    'DockitUp'
 
   return (
     <header className="h-14 bg-white border-b border-border flex items-center justify-between px-6 sticky top-0 z-30">

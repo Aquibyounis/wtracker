@@ -72,9 +72,9 @@ export function Sidebar() {
         <div className="px-5 pt-6 pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Wtracker Logo" className="w-5 h-5 object-contain" />
+              <img src="/logo.png" alt="DockitUp Logo" className="w-5 h-5 object-contain" />
               <h1 className="text-[13px] font-bold tracking-[0.15em] text-black">
-                WTRACKER
+                DOCKITUP
               </h1>
             </div>
             <button
