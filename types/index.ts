@@ -27,9 +27,15 @@ export interface Day {
   summary?: string | null
   mood?: number | null
   notes?: string | null
+  hasMeeting?: boolean
+  meetingPoints?: string | null
+  projectId: string
+  project?: {
+    id: string
+    name: string
+    company: { id: string; name: string }
+  } | null
   userId: string
-  roomId?: string | null
-  room?: Room | null
   workBlocks?: WorkBlock[]
   points?: Point[]
   tags?: Tag[]
