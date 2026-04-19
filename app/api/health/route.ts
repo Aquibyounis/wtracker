@@ -1,25 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const token = req.headers.get('x-health-token')
-    if (token !== process.env.HEALTH_CHECK_SECRET) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    // A very lightweight query to keep the DB connection warm
     await prisma.$queryRaw`SELECT 1`
-
-    return NextResponse.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      dbPing: true,
-    })
+    return NextResponse.json({ status: 'ok', timestamp: new Date().toISOString() })
   } catch (error) {
-    console.error('Health check error:', error)
-    return NextResponse.json(
-      { status: 'error', timestamp: new Date().toISOString(), dbPing: false },
-      { status: 500 }
-    )
+    console.error('Keep-alive ping failed:', error)
+    return NextResponse.json({ status: 'error' }, { status: 500 })
   }
 }

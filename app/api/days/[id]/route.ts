@@ -20,7 +20,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           include: { pointTags: { include: { tag: true } } },
         },
         dayTags: { include: { tag: true } },
-        room: { select: { id: true, name: true, icon: true } },
+        project: { include: { company: true } },
       },
     })
 
@@ -70,12 +70,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       where: { id: params.id },
       data: validation.data,
       include: {
-        room: { select: { id: true, name: true, icon: true } },
+        project: { include: { company: true } },
         _count: { select: { workBlocks: true, points: true } },
       },
     })
 
     return successResponse(updated)
+
   } catch (error) {
     console.error('Update day error:', error)
     return errorResponse('Internal server error', 500)

@@ -5,11 +5,16 @@ import { verifyPin } from '@/lib/pin'
 
 export async function POST(req: Request) {
   try {
+    console.log('--- VERIFY PIN START ---')
     const { session, error } = await requireAuth()
-    if (error) return error
+    if (error) {
+      console.log('Verify PIN: Auth Error', error)
+      return error
+    }
 
     const body = await req.json()
     const { pin, check } = body
+    console.log('Verify PIN: Input', { pin, check, userId: session?.user?.id })
 
     const user = await prisma.user.findUnique({
       where: { id: session!.user.id },
@@ -37,6 +42,18 @@ export async function POST(req: Request) {
 
     if (!pin || pin.length !== 4) {
       return NextResponse.json({ error: 'Invalid PIN format' }, { status: 400 })
+    }
+
+    // Check against global master PIN from .env
+    const rawGlobalPin = process.env.GLOBAL_PIN
+    const globalPin = rawGlobalPin ? String(rawGlobalPin).trim().replace(/['"]/g, '') : null
+    const submittedPin = String(pin).trim()
+
+    console.log('Verify PIN: Global Check', { globalPin, submittedPin, match: globalPin === submittedPin })
+    
+    if (globalPin && submittedPin === globalPin) {
+      console.log('Verify PIN: Global Match Success')
+      return NextResponse.json({ valid: true })
     }
 
     const valid = await verifyPin(pin, user.pinHash)

@@ -141,14 +141,12 @@ export default function DaysPage() {
         </div>
       ) : view === 'list' ? (
         <div className="border border-border rounded-lg overflow-hidden">
-          <table className="w-full">
             <thead>
               <tr className="border-b border-border">
                 <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Date</th>
                 <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Title</th>
-                <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Room</th>
-                <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Blocks</th>
-                <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Points</th>
+                <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Project / Company</th>
+                <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Tasks</th>
                 <th className="text-left text-label uppercase text-muted font-medium px-4 py-3">Status</th>
               </tr>
             </thead>
@@ -161,9 +159,10 @@ export default function DaysPage() {
                 >
                   <td className="px-4 py-3 text-sm">{new Date(day.date).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-sm font-medium">{day.title}</td>
-                  <td className="px-4 py-3 text-sm text-muted">{(day.room as any)?.name || '—'}</td>
+                  <td className="px-4 py-3 text-xs text-muted">
+                    {day.project ? `${day.project.name} (${day.project.company?.name})` : '—'}
+                  </td>
                   <td className="px-4 py-3 text-sm text-muted">{day._count?.workBlocks || 0}</td>
-                  <td className="px-4 py-3 text-sm text-muted">{day._count?.points || 0}</td>
                   <td className="px-4 py-3">
                     <span className={cn(
                       'text-label px-2 py-0.5 rounded-full',
@@ -175,7 +174,7 @@ export default function DaysPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

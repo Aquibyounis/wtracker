@@ -8,7 +8,6 @@ export async function GET(req: Request) {
     if (error) return error
 
     const { searchParams } = new URL(req.url)
-    const roomId = searchParams.get('roomId')
     const dayId = searchParams.get('dayId')
     const priority = searchParams.get('priority')
     const tag = searchParams.get('tag')
@@ -16,7 +15,6 @@ export async function GET(req: Request) {
     const sort = searchParams.get('sort') || 'newest'
 
     const where: Record<string, unknown> = { userId: session!.user.id }
-    if (roomId) where.roomId = roomId
     if (dayId) where.dayId = dayId
     if (priority) where.priority = priority
     if (search) {
@@ -38,8 +36,11 @@ export async function GET(req: Request) {
       orderBy,
       include: {
         pointTags: { include: { tag: true } },
-        day: { select: { id: true, title: true, date: true } },
-        room: { select: { id: true, name: true } },
+        day: { 
+          include: { 
+            project: { include: { company: true } }
+          } 
+        },
       },
     })
 
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
       return errorResponse(validation.error.errors[0].message)
     }
 
-    const { title, body: pointBody, priority, colorLabel, dayId, roomId, tags } = validation.data
+    const { title, body: pointBody, priority, colorLabel, dayId, tags } = validation.data
 
     const point = await prisma.point.create({
       data: {
@@ -77,7 +78,6 @@ export async function POST(req: Request) {
         colorLabel: colorLabel || 'light',
         userId: session!.user.id,
         dayId: dayId || null,
-        roomId: roomId || null,
         pointTags: tags && tags.length > 0 ? {
           create: await Promise.all(
             tags.map(async (tagName) => {
@@ -93,8 +93,7 @@ export async function POST(req: Request) {
       },
       include: {
         pointTags: { include: { tag: true } },
-        day: { select: { id: true, title: true, date: true } },
-        room: { select: { id: true, name: true } },
+        day: { include: { project: { include: { company: true } } } },
       },
     })
 
@@ -103,6 +102,7 @@ export async function POST(req: Request) {
       tags: point.pointTags.map((pt) => pt.tag),
       pointTags: undefined,
     }, 201)
+
   } catch (error) {
     console.error('Create point error:', error)
     return errorResponse('Internal server error', 500)

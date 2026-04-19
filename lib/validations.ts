@@ -24,17 +24,22 @@ export const changePinSchema = z.object({
   newPin: z.string().length(4).regex(/^\d{4}$/),
 })
 
-export const roomSchema = z.object({
-  name: z.string().min(1, 'Room name is required').max(50),
+export const companySchema = z.object({
+  name: z.string().min(1, 'Company name is required').max(50),
   description: z.string().max(500).optional(),
-  icon: z.string().max(10).optional(),
-  colorLabel: z.enum(['light', 'mid', 'dark', 'black']).optional(),
+  isDefault: z.boolean().optional(),
+})
+
+export const projectSchema = z.object({
+  name: z.string().min(1, 'Project name is required').max(50),
+  description: z.string().max(500).optional(),
+  companyId: z.string().min(1, 'Company ID is required'),
 })
 
 export const daySchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   date: z.string().or(z.date()),
-  roomId: z.string().optional().nullable(),
+  projectId: z.string().min(1, 'Project ID is required'),
   status: z.enum(['draft', 'active', 'completed']).optional(),
   templateType: z.enum(['blank', 'standup', 'sprint', 'deepwork']).optional(),
 })
@@ -45,7 +50,9 @@ export const dayUpdateSchema = z.object({
   summary: z.string().max(2000).optional().nullable(),
   mood: z.number().min(1).max(5).optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
-  roomId: z.string().optional().nullable(),
+  projectId: z.string().optional(),
+  hasMeeting: z.boolean().optional(),
+  meetingPoints: z.string().optional().nullable(),
 })
 
 export const blockSchema = z.object({
@@ -78,7 +85,6 @@ export const pointSchema = z.object({
   priority: z.enum(['normal', 'high']).optional(),
   colorLabel: z.enum(['light', 'mid', 'dark', 'black']).optional(),
   dayId: z.string().optional().nullable(),
-  roomId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
 })
 
@@ -88,6 +94,6 @@ export const pointUpdateSchema = z.object({
   priority: z.enum(['normal', 'high']).optional(),
   colorLabel: z.enum(['light', 'mid', 'dark', 'black']).optional(),
   dayId: z.string().optional().nullable(),
-  roomId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
 })
+

@@ -6,14 +6,22 @@ import { StatsBar } from '@/components/dashboard/StatsBar'
 import { TodaySnapshot } from '@/components/dashboard/TodaySnapshot'
 import { WeeklyGrid } from '@/components/dashboard/WeeklyGrid'
 import { RecentPoints } from '@/components/dashboard/RecentPoints'
-import { PinnedRooms } from '@/components/dashboard/PinnedRooms'
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, format } from 'date-fns'
+import { RecentProjects } from '@/components/dashboard/RecentProjects'
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from 'date-fns'
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session) return null
 
   const userId = session.user.id
+
+  // Check if user has any companies. If not, redirect to setup.
+  const companyCount = await prisma.company.count({ where: { userId } })
+  if (companyCount === 0) {
+    const { redirect } = await import('next/navigation')
+    redirect('/setup/company')
+  }
+
   const now = new Date()
   const todayStart = startOfDay(now)
   const todayEnd = endOfDay(now)
@@ -22,7 +30,7 @@ export default async function DashboardPage() {
   const monthStart = startOfMonth(now)
   const monthEnd = endOfMonth(now)
 
-  const [totalDays, pointsThisWeek, thisMonthDays, todayDay, weekDays, recentPoints, pinnedRooms] =
+  const [totalDays, pointsThisWeek, thisMonthDays, todayDay, weekDays, recentPoints, recentProjects] =
     await Promise.all([
       prisma.day.count({ where: { userId } }),
       prisma.point.count({
@@ -45,10 +53,14 @@ export default async function DashboardPage() {
         orderBy: { createdAt: 'desc' },
         take: 5,
         include: {
-          day: { select: { room: { select: { name: true } } } },
+          day: { 
+            include: { 
+              project: { include: { company: true } } 
+            } 
+          },
         },
       }),
-      prisma.room.findMany({
+      prisma.project.findMany({
         where: { userId },
         orderBy: { updatedAt: 'desc' },
         take: 4,
@@ -58,7 +70,7 @@ export default async function DashboardPage() {
 
   const flattenedRecentPoints = recentPoints.map((p: any) => ({
     ...p,
-    room: p.day?.room || null,
+    project: p.day?.project || null,
   }))
 
   // Calculate streak
@@ -95,8 +107,9 @@ export default async function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         <RecentPoints points={JSON.parse(JSON.stringify(flattenedRecentPoints))} />
-        <PinnedRooms rooms={JSON.parse(JSON.stringify(pinnedRooms))} />
+        <RecentProjects projects={JSON.parse(JSON.stringify(recentProjects))} />
       </div>
     </PageWrapper>
   )
 }
+

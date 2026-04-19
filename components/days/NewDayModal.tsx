@@ -26,15 +26,15 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
   const [date, setDate] = useState(defaultDate || format(new Date(), 'yyyy-MM-dd'))
   const [title, setTitle] = useState('')
   const [templateType, setTemplateType] = useState('blank')
-  const [rooms, setRooms] = useState<Array<{ id: string; name: string }>>([])
-  const [roomId, setRoomId] = useState('')
+  const [projects, setProjects] = useState<Array<{ id: string; name: string; company: { name: string } }>>([])
+  const [projectId, setProjectId] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (open) {
-      fetch('/api/rooms')
+      fetch('/api/projects')
         .then((res) => res.json())
-        .then(setRooms)
+        .then(setProjects)
         .catch(() => {})
     }
   }, [open])
@@ -43,6 +43,10 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
     e.preventDefault()
     if (!title.trim()) {
       toast.error('Title is required')
+      return
+    }
+    if (!projectId) {
+      toast.error('Please select a project')
       return
     }
 
@@ -54,7 +58,7 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
         body: JSON.stringify({
           title,
           date,
-          roomId: roomId || undefined,
+          projectId,
           templateType,
         }),
       })
@@ -66,7 +70,7 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
       onClose()
       setTitle('')
       setTemplateType('blank')
-      setRoomId('')
+      setProjectId('')
     } catch {
       toast.error('Failed to create day')
     } finally {
@@ -75,7 +79,7 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New Day" size="md">
+    <Modal open={open} onClose={onClose} title="New Log entry" size="md">
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
           label="Date"
@@ -83,29 +87,32 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
+
         <Input
           label="Title"
-          placeholder="What are you working on?"
+          placeholder="e.g. Frontend Refactor, Sprint Review..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <div>
-          <label className="block text-sm font-medium mb-1.5">Room</label>
+          <label className="block text-sm font-bold tracking-tight mb-1.5 uppercase text-[10px] text-muted">Project</label>
           <select
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-            className="w-full border border-border rounded-md px-3.5 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+            className="w-full border border-border rounded-lg px-3.5 py-3 text-sm font-medium focus:outline-none focus:border-black bg-white shadow-sm"
           >
-            <option value="">No Room</option>
-            {rooms.map((room) => (
-              <option key={room.id} value={room.id}>{room.name}</option>
+            <option value="">Select a project...</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} ({p.company.name})
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Template</label>
+          <label className="block text-sm font-bold tracking-tight mb-2 uppercase text-[10px] text-muted">Structure Template</label>
           <div className="flex flex-wrap gap-2">
             {templates.map((t) => (
               <button
@@ -113,10 +120,10 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
                 type="button"
                 onClick={() => setTemplateType(t.value)}
                 className={cn(
-                  'px-4 py-1.5 rounded-full text-xs font-medium border transition-all duration-150',
+                  'px-4 py-2 rounded-lg text-xs font-bold border transition-all duration-200',
                   templateType === t.value
-                    ? 'bg-black text-white border-black'
-                    : 'bg-white text-black border-border hover:bg-surface'
+                    ? 'bg-black text-white border-black shadow-lg shadow-black/10'
+                    : 'bg-white text-black border-border hover:border-black/20 hover:bg-surface'
                 )}
               >
                 {t.label}
@@ -125,15 +132,16 @@ export function NewDayModal({ open, onClose, onCreated, defaultDate }: NewDayMod
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
+        <div className="flex justify-end gap-3 pt-4 border-t border-border mt-6">
+          <Button type="button" variant="ghost" onClick={onClose} className="font-bold text-xs uppercase tracking-wider">
             Cancel
           </Button>
-          <Button type="submit" loading={loading}>
-            Create & Open →
+          <Button type="submit" loading={loading} className="px-6 font-bold text-xs uppercase tracking-wider">
+            Initialize Entry →
           </Button>
         </div>
       </form>
     </Modal>
   )
 }
+

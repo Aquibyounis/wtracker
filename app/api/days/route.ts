@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     if (error) return error
 
     const { searchParams } = new URL(req.url)
-    const roomId = searchParams.get('roomId')
+    const projectId = searchParams.get('projectId')
     const month = searchParams.get('month') // YYYY-MM
     const week = searchParams.get('week') // YYYY-WW
     const sort = searchParams.get('sort') || 'newest'
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const status = searchParams.get('status')
 
     const where: Record<string, unknown> = { userId: session!.user.id }
-    if (roomId) where.roomId = roomId
+    if (projectId) where.projectId = projectId
     if (status) where.status = status
     if (search) {
       where.OR = [
@@ -46,7 +46,9 @@ export async function GET(req: Request) {
       where: where as any,
       orderBy,
       include: {
-        room: { select: { id: true, name: true, icon: true } },
+        project: { 
+          include: { company: true }
+        },
         _count: { select: { workBlocks: true, points: true } },
       },
     })
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       return errorResponse(validation.error.errors[0].message)
     }
 
-    const { title, date, roomId, status: dayStatus, templateType } = validation.data
+    const { title, date, projectId, status: dayStatus, templateType } = validation.data
 
     // Template blocks
     const templateBlocks: { title: string; order: number }[] = []
@@ -100,19 +102,20 @@ export async function POST(req: Request) {
         date: new Date(date),
         status: dayStatus || 'draft',
         userId: session!.user.id,
-        roomId: roomId || null,
+        projectId,
         workBlocks: templateBlocks.length > 0 ? {
           create: templateBlocks,
         } : undefined,
       },
       include: {
         workBlocks: { orderBy: { order: 'asc' } },
-        room: { select: { id: true, name: true, icon: true } },
+        project: { include: { company: true } },
         _count: { select: { workBlocks: true, points: true } },
       },
     })
 
     return successResponse(day, 201)
+
   } catch (error) {
     console.error('Create day error:', error)
     return errorResponse('Internal server error', 500)

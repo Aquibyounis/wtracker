@@ -214,49 +214,61 @@ export function PinGate({ children }: PinGateProps) {
   const currentPinDisplay = needsSetup && setupStep === 'enter' ? setupPin : pin
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4 transition-colors">
+      {/* Decorative background element */}
+      <div className="absolute top-0 right-0 w-80 h-80 bg-zinc-900/[0.03] dark:bg-white/[0.03] -mr-40 -mt-40 rounded-full blur-3xl pointer-events-none" />
+
       {/* Logo */}
-      <img src="/logo.png" alt="DockitUp Logo" className="w-10 h-10 object-contain mb-4" />
-      <h1 className="text-[13px] font-bold tracking-[0.15em] text-black mb-8">
+      <img src="/logo.png" alt="DockitUp Logo" className="w-14 h-14 object-contain mb-8 dark:grayscale dark:invert opacity-80 transition-all" />
+      <h1 className="text-[12px] font-black tracking-[0.4em] text-[var(--foreground)] mb-10 uppercase transition-colors">
         DOCKITUP
       </h1>
 
       {/* Subtitle */}
-      <p className="text-sm text-muted mb-8">
+      <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.25em] mb-12 animate-pulse">
         {needsSetup
           ? setupStep === 'enter'
-            ? 'Set up your PIN'
-            : 'Confirm your PIN'
-          : 'Enter your PIN to continue'}
+            ? 'INITIALIZE PASSCODE'
+            : 'CONFIRM PASSCODE'
+          : 'SECURITY VERIFICATION'}
       </p>
 
       {/* PIN dots */}
-      <div className={cn('flex gap-4 mb-10', shaking && 'shake')}>
+      <div className={cn('flex gap-6 mb-14', shaking && 'shake')}>
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
             className={cn(
-              'w-5 h-5 rounded-full border-2 border-black transition-all duration-150',
-              i < currentPinDisplay.length ? 'bg-black' : 'bg-white'
+              'w-4 h-4 rounded-full border-2 transition-all duration-300',
+              i < currentPinDisplay.length 
+                ? 'bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100 scale-125 shadow-xl shadow-black/10' 
+                : 'bg-transparent border-[var(--border)]'
             )}
           />
         ))}
       </div>
 
       {/* Error */}
-      {error && <p className="text-xs text-muted mb-4">{error}</p>}
+      <div className="h-8 mb-6">
+        {error && (
+          <p className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-bounce">
+            {error}
+          </p>
+        )}
+      </div>
 
       {/* Numpad */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-5 mb-10">
         {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
           <button
             key={digit}
             onClick={() => handleDigit(digit)}
             disabled={!!isLocked || loading}
             className={cn(
-              'w-16 h-16 rounded-lg border border-border text-xl font-medium transition-all duration-150',
-              'hover:bg-surface active:bg-black active:text-white',
-              'disabled:opacity-50 disabled:cursor-not-allowed'
+              'w-20 h-20 rounded-[28px] border border-[var(--border)] text-2xl font-black transition-all duration-200 outline-none',
+              'bg-[var(--surface)] text-[var(--foreground)]',
+              'hover:bg-[var(--surface-hover)] hover:scale-105 active:scale-95 active:bg-zinc-900 active:text-white dark:active:bg-white dark:active:text-zinc-900',
+              'disabled:opacity-20 disabled:cursor-not-allowed shadow-xl shadow-black/[0.02]'
             )}
           >
             {digit}
@@ -267,9 +279,10 @@ export function PinGate({ children }: PinGateProps) {
           onClick={() => handleDigit('0')}
           disabled={!!isLocked || loading}
           className={cn(
-            'w-16 h-16 rounded-lg border border-border text-xl font-medium transition-all duration-150',
-            'hover:bg-surface active:bg-black active:text-white',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+            'w-20 h-20 rounded-[28px] border border-[var(--border)] text-2xl font-black transition-all duration-200 outline-none',
+            'bg-[var(--surface)] text-[var(--foreground)]',
+            'hover:bg-[var(--surface-hover)] hover:scale-105 active:scale-95 active:bg-zinc-900 active:text-white dark:active:bg-white dark:active:text-zinc-900',
+            'disabled:opacity-20 disabled:cursor-not-allowed shadow-xl shadow-black/[0.02]'
           )}
         >
           0
@@ -278,28 +291,30 @@ export function PinGate({ children }: PinGateProps) {
           onClick={handleBackspace}
           disabled={!!isLocked || loading}
           className={cn(
-            'w-16 h-16 rounded-lg border border-border flex items-center justify-center transition-all duration-150',
-            'hover:bg-surface text-muted hover:text-black',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+            'w-20 h-20 rounded-[28px] border border-transparent flex items-center justify-center transition-all duration-200 outline-none',
+            'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)]',
+            'disabled:opacity-20 disabled:cursor-not-allowed'
           )}
         >
-          <Delete size={20} />
+          <Delete size={24} />
         </button>
       </div>
 
       {/* Attempt counter / lock timer */}
-      {isLocked ? (
-        <p className="text-xs text-muted">
-          Try again in {lockCountdown}s
-        </p>
-      ) : pinAttempts > 0 && !needsSetup ? (
-        <p className="text-xs text-muted">
-          {maxAttempts - pinAttempts} attempt{maxAttempts - pinAttempts !== 1 ? 's' : ''} remaining
-        </p>
-      ) : null}
+      <div className="h-6">
+        {isLocked ? (
+          <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">
+            LOCKOUT ACTIVE: {lockCountdown}S
+          </p>
+        ) : pinAttempts > 0 && !needsSetup ? (
+          <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">
+            {maxAttempts - pinAttempts} ATTEMPTS REMAINING
+          </p>
+        ) : null}
+      </div>
 
       {loading && (
-        <div className="mt-4">
+        <div className="mt-8 transition-opacity duration-300">
           <Spinner size="sm" />
         </div>
       )}
