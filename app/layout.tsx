@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
           {children}
@@ -18,9 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="bottom-right"
             toastOptions={{
               style: {
-                background: '#000',
-                color: '#fff',
-                borderRadius: '6px',
+                background: 'var(--surface)',
+                color: 'var(--foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: '12px',
                 fontSize: '14px',
               },
             }}

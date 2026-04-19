@@ -22,8 +22,8 @@ export function WeeklyGrid({ weekDays, weekStart }: WeeklyGridProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold mb-4">This Week</h3>
-      <div className="grid grid-cols-7 gap-3">
+      <h3 className="text-sm font-black uppercase tracking-widest text-[var(--muted)] mb-4">This Week</h3>
+      <div className="grid grid-cols-7 gap-2">
         {allDays.map((d) => {
           const dateStr = format(d, 'yyyy-MM-dd')
           const dayData = weekDays.find(
@@ -38,26 +38,26 @@ export function WeeklyGrid({ weekDays, weekStart }: WeeklyGridProps) {
             >
               <Card
                 className={cn(
-                  'p-3 text-center min-h-[90px] group transition-all duration-300',
-                  isToday && 'ring-2 ring-zinc-900 dark:ring-zinc-100 ring-offset-2 dark:ring-offset-black'
+                  'p-3 text-center min-h-[90px] group transition-all duration-300 cursor-pointer hover:border-[var(--border-strong)]',
+                  isToday && 'ring-2 ring-[var(--foreground)] ring-offset-2 ring-offset-[var(--background)]'
                 )}
               >
-                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors">
+                <p className="text-[9px] font-black uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors">
                   {format(d, 'EEE')}
                 </p>
-                <p className="text-xl font-black mt-2 leading-none">{format(d, 'd')}</p>
+                <p className="text-xl font-black mt-1 leading-none">{format(d, 'd')}</p>
                 <div className="mt-3 flex justify-center">
                   <div
                     className={cn(
                       'w-2 h-2 rounded-full transition-all duration-300',
-                      dayData 
-                        ? 'bg-zinc-900 dark:bg-zinc-100 scale-110 shadow-sm' 
-                        : 'border border-[var(--border)] bg-transparent opacity-30'
+                      dayData
+                        ? 'bg-[var(--foreground)] scale-110'
+                        : 'border border-[var(--border)] bg-transparent opacity-40'
                     )}
                   />
                 </div>
                 {dayData && (dayData._count.points > 0 || dayData._count.workBlocks > 0) && (
-                  <div className="mt-2 text-[9px] font-black uppercase tracking-tighter text-[var(--muted-foreground)]">
+                  <div className="mt-1.5 text-[9px] font-black uppercase tracking-tighter text-[var(--muted)]">
                     {dayData._count.points}PT
                   </div>
                 )}

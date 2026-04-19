@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { formatDate, formatRelative } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface RecentPointsProps {
@@ -36,19 +36,19 @@ export function RecentPoints({ points }: RecentPointsProps) {
                 i < points.length - 1 && 'border-b border-[var(--border)]'
               )}
             >
-              <div className="flex flex-col items-center justify-center min-w-[40px] h-10 rounded-lg bg-[var(--background)] border border-[var(--border)]">
-                <span className="text-[10px] font-black uppercase tracking-tighter text-[var(--foreground)]">
+              <div className="flex flex-col items-center justify-center min-w-[40px] h-10 rounded-xl bg-[var(--surface-active)] border border-[var(--border)]">
+                <span className="text-[9px] font-black uppercase tracking-tighter text-[var(--muted)]">
                   {formatDate(point.createdAt, 'MMM')}
                 </span>
-                <span className="text-[12px] font-black leading-none">
+                <span className="text-[12px] font-black leading-none text-[var(--foreground)]">
                   {formatDate(point.createdAt, 'd')}
                 </span>
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-bold block truncate text-[var(--foreground)]">{point.title}</span>
                 {point.room && (
-                  <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--muted)] mt-1 block">
+                  <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--muted)] mt-0.5 block">
                     {point.room.name}
                   </span>
                 )}
@@ -56,9 +56,9 @@ export function RecentPoints({ points }: RecentPointsProps) {
 
               <div
                 className={cn(
-                  'w-2 h-2 rounded-full flex-shrink-0 transition-transform duration-300',
-                  point.priority === 'high' 
-                    ? 'bg-zinc-900 dark:bg-zinc-100 scale-110 shadow-sm' 
+                  'w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300',
+                  point.priority === 'high'
+                    ? 'bg-[var(--foreground)] scale-110'
                     : 'border border-[var(--border)]'
                 )}
               />

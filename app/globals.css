@@ -8,23 +8,41 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #18181b; /* zinc-900 */
+  /* Light mode: white bg, white cards, black accents */
+  --background: #f4f5f6;
+  --foreground: #0a0a0a;
   --surface: #ffffff;
-  --surface-hover: #fafafa;
-  --border: rgba(0, 0, 0, 0.05);
-  --muted: #71717a; /* zinc-500 */
-  --muted-foreground: #a1a1aa; /* zinc-400 */
+  --surface-hover: #f8f8f8;
+  --surface-active: #f1f1f1;
+  --border: #e4e4e7;
+  --border-strong: #0a0a0a;
+  --muted: #71717a;
+  --muted-foreground: #a1a1aa;
+  --sidebar-bg: #0a0a0a;
+  --sidebar-foreground: #fafafa;
+  --sidebar-border: #1a1a1a;
+  --shadow-depth: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0,0,0,0.06);
+  --accent: #0a0a0a;
+  --accent-foreground: #fafafa;
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #f4f4f5; /* zinc-100 */
-  --surface: #09090b; /* zinc-950/very dark */
-  --surface-hover: #18181b; /* zinc-900 */
-  --border: rgba(255, 255, 255, 0.08);
-  --muted: #a1a1aa; /* zinc-400 */
-  --muted-foreground: #71717a; /* zinc-500 */
+  /* Dark mode: near-black bg, dark gray cards, white accents */
+  --background: #09090b;
+  --foreground: #fafafa;
+  --surface: #18181b;
+  --surface-hover: #1f1f23;
+  --surface-active: #27272a;
+  --border: #27272a;
+  --border-strong: #fafafa;
+  --muted: #a1a1aa;
+  --muted-foreground: #71717a;
+  --sidebar-bg: #0a0a0a;
+  --sidebar-foreground: #fafafa;
+  --sidebar-border: #27272a;
+  --shadow-depth: 0 1px 3px rgba(0,0,0,0.3), 0 6px 16px -4px rgba(0,0,0,0.4);
+  --accent: #fafafa;
+  --accent-foreground: #0a0a0a;
 }
 
 body {
@@ -74,19 +92,33 @@ body {
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #F4F4F4; }
-::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #888888; }
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
 
 /* Focus styles */
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
-  border-color: #000000;
+  border-color: var(--accent);
 }
 
 /* Selection */
 ::selection {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }

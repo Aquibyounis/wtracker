@@ -15,7 +15,12 @@ export async function GET(req: Request) {
       userId: session.user.id,
       ...(companyId && { companyId })
     },
-    include: { company: true },
+    include: { 
+      company: true,
+      _count: {
+        select: { days: true }
+      }
+    },
     orderBy: { createdAt: 'desc' },
   })
 

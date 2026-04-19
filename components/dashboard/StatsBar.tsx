@@ -22,18 +22,20 @@ const statConfigs = [
 
 export function StatsBar({ stats }: StatsBarProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
       {statConfigs.map((config) => {
         const Icon = config.icon
         const value = stats[config.key as keyof typeof stats]
         return (
-          <Card key={config.key} className="p-6">
+          <Card key={config.key} className="p-8 hover:border-[var(--border-strong)] transition-all group active:scale-[0.98]">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[32px] font-bold leading-none">{value}</p>
-                <p className="text-caption text-muted mt-2">{config.label}</p>
+                <p className="text-4xl font-black leading-none tracking-tighter text-[var(--foreground)]">{value}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted)] mt-3 group-hover:text-[var(--foreground)] transition-colors">
+                  {config.label}
+                </p>
               </div>
-              <Icon size={20} className="text-muted" />
+              <Icon size={18} className="text-[var(--muted)] group-hover:text-[var(--foreground)] transition-colors" />
             </div>
           </Card>
         )

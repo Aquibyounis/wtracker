@@ -392,6 +392,3 @@ export default function DayEditorPage() {
     </PageWrapper>
   )
 }
-per>
-  )
-}

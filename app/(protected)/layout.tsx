@@ -25,10 +25,10 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   // we usually do this at the page level or middleware.
   // Given the current structure, we'll use a CSS overlay or a simple conditional.
   return (
-    <PinGate>
+    // <PinGate>
       <div className="flex min-h-screen">
         <Sidebar />
-        <main className="flex-1 lg:ml-[240px] min-h-screen">
+        <main className="flex-1 lg:ml-[264px] min-h-screen transition-all duration-300">
           <TopBar />
           <div className="fade-in px-4 lg:px-8 py-6 max-w-[1600px] mx-auto w-full">
             {children}
@@ -38,7 +38,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
         <PointDrawer />
         <KeepAlive />
       </div>
-    </PinGate>
+    // </PinGate>
   )
 }
 
